@@ -25,10 +25,15 @@ open class GaugeView: UIView {
     /// Current value.
     public var value: Double = 0 {
         didSet {
+            var displayValue = value
             value = max(min(value, maxValue), minValue)
             
+            if !self.valueTextCanExceedMax && value < displayValue {
+                displayValue = value
+            }
+            
             // Set text for value label
-            valueLabel.text = String(format: "%.0f", value)
+            valueLabel.text = String(format: "%.0f", displayValue)
             
             // Trigger the stoke animation of ring layer
             strokeGauge()
@@ -43,6 +48,9 @@ open class GaugeView: UIView {
     
     /// Limit value.
     public var limitValue: Double = 50
+    
+    /// If true, the display of the value can exceed maxValue - i.e. 110%
+    public var valueTextCanExceedMax: Bool = false
     
     /// The number of divisions.
     @IBInspectable public var numOfDivisions: Int = 6
@@ -130,6 +138,7 @@ open class GaugeView: UIView {
         label.backgroundColor = UIColor.clear
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
+        label.baselineAdjustment = .alignCenters
         return label
     }()
     
